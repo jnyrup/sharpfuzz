@@ -117,7 +117,7 @@ namespace SharpFuzz
 
                             info.Environment[ControlHandle] = ctlPipe.GetClientHandleAsString();
                             info.Environment[StatusHandle] = stPipe.GetClientHandleAsString();
-                            info.Environment[ParentId] = Process.GetCurrentProcess().Id.ToString();
+                            info.Environment[ParentId] = GetProcessId().ToString();
                             info.Environment[InitialRun] = initial.ToString();
 
                             var child = Process.Start(info);

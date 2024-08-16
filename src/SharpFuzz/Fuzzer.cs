@@ -259,7 +259,7 @@ namespace SharpFuzz
                     var trace = new TraceWrapper(sharedMem);
 
                     w.Write(0);
-                    var pid = Process.GetCurrentProcess().Id;
+                    var pid = GetProcessId();
 
                     using (var memory = new UnclosableStreamWrapper(new MemoryStream()))
                     {
@@ -405,6 +405,16 @@ namespace SharpFuzz
             {
                 throw new ArgumentNullException(name);
             }
+        }
+
+        private static int GetProcessId()
+        {
+#if NET6_0_OR_GREATER
+            return Environment.ProcessId;
+#else
+            using var process = Process.GetCurrentProcess();
+            return process.Id;
+#endif
         }
     }
 }
