@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace SharpFuzz
 {
@@ -252,6 +253,9 @@ namespace SharpFuzz
     /// <summary>
     ///	  IPC implementation for `libfuzzer-dotnet` on Windows.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [SupportedOSPlatform("windows")]
+#endif
     class WindowsFuzzerIpc : IFuzzerIpcImpl
     {
         public BinaryReader Control { get; }
