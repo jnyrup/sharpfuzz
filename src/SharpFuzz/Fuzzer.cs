@@ -191,11 +191,8 @@ namespace SharpFuzz
             var cctor = new MethodDefUser(".cctor", cctorSig, cctorImplFlags, cctorFlags);
             traceType.Methods.Add(cctor);
 
-            var body = new CilBody { InitLocals = false, MaxStack = 1 };
-            cctor.Body = body;
-
             var local = new Local(mod.CorLibTypes.IntPtr);
-            body.Variables.Add(local);
+            var locals = new Local[] { local };
 
             var marshalType = mod.Types.Single(type => type.FullName == typeof(Marshal).FullName);
             var intPtrType = mod.Types.Single(type => type.FullName == typeof(IntPtr).FullName);
@@ -211,13 +208,18 @@ namespace SharpFuzz
                 MethodSig.CreateInstance(new PtrSig(mod.CorLibTypes.Void))
             );
 
-            body.Instructions.Add(OpCodes.Ldc_I4.ToInstruction(MapSize));
-            body.Instructions.Add(OpCodes.Call.ToInstruction(allocHGlobal));
-            body.Instructions.Add(OpCodes.Stloc_0.ToInstruction());
-            body.Instructions.Add(OpCodes.Ldloca_S.ToInstruction(local));
-            body.Instructions.Add(OpCodes.Call.ToInstruction(toPointer));
-            body.Instructions.Add(OpCodes.Stsfld.ToInstruction(sharedMemField));
-            body.Instructions.Add(OpCodes.Ret.ToInstruction());
+            var instructions = new Instruction[]
+            {
+                OpCodes.Ldc_I4.ToInstruction(MapSize),
+                OpCodes.Call.ToInstruction(allocHGlobal),
+                OpCodes.Stloc_0.ToInstruction(),
+                OpCodes.Ldloca_S.ToInstruction(local),
+                OpCodes.Call.ToInstruction(toPointer),
+                OpCodes.Stsfld.ToInstruction(sharedMemField),
+                OpCodes.Ret.ToInstruction(),
+            };
+
+            cctor.Body = new CilBody(initLocals: false, instructions, null, locals) { MaxStack = 1 };
 
             return traceType;
         }
