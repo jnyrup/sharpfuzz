@@ -46,7 +46,7 @@ Examples:
             {
                 // This feature is necessary for me, but it's not documented on purpose,
                 // because I don't want to complicate things further for the users.
-                if (arg.StartsWith("-"))
+                if (arg.StartsWith('-'))
                 {
                     exclude.AddRange(arg.Substring(1).Trim().Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
